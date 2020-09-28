@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -50,79 +50,64 @@ const SearchInput = styled(Input)`
   margin-bottom: 2rem
 `
 
-export default class extends React.Component {
-  constructor (props) {
+export default function SearchWidget() {
+  const [search, setSearch] = useState('');
+  const [items, setItems] = useState([]);
+  const [selected, setSelected] = useState(0);
+  const [controller, setController] = useState(null);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
-    super(props)
-    this.state = { search: '', items: [], isLoaded: false, selected: 0, controller: null }
+  }, []);
 
-    this.listCities = this.listCities.bind(this)
-    this.selectItem = this.selectItem.bind(this)
-    this.getResults = this.getResults.bind(this)
-    this.clearInput = this.clearInput.bind(this)
-  }
+  const selectItem = ({ name, id }) => {
+    setSelected(id);
+    setSearch(name);
+  };
 
-  selectItem ({ name, id }) {
-    this.setState({ selected: id, search: name })
-  }
+  const listCities = (event) => {
+    setSearch(event.target.value)
 
-  listCities (event) {
-    this.setState({ search: event.target.value })
-
-    if (this.state.controller) {
-      this.state.controller.abort();
+    if (controller) {
+      controller.abort();
     }
 
-    const controller = new AbortController();
-    this.setState({ controller: controller });
+    const abortController = new AbortController();
+    setController(abortController);
 
-    getCities(this.state.search, controller.signal).then(res => res.json())
+    getCities(search, abortController.signal).then(res => res.json())
     .then(
       (result) => {
-        this.setState({
-          isLoaded: true,
-          items: result.location_suggestions.map(
-            city => <CitiesListItem key={city.id}
-                                    onClick={() => this.selectItem(
-                                      city)}>{city.name}</CitiesListItem>),
-        })
-      },
-      (error) => {
-        this.setState({
-          isLoaded: true,
-          error,
-        })
-      },
+        setItems(result.location_suggestions.map(city => <CitiesListItem key={city.id} onClick={() => selectItem(city)}>{city.name}</CitiesListItem>));
+      }
     )
-  }
+  };
 
-  clearInput() {
-    this.setState({ search: '', isLoaded: false, selected: 0 })
-  }
+  const clearInput = () => {
+    setSearch('');
+    setSelected(0);
+  };
 
-  getResults () {
-    const selected = this.state.selected
+  const getResults = () => {
     return (
       selected ? null : <CitiesList
-        className="cities">{this.state.items}</CitiesList>
+        className="cities">{items}</CitiesList>
     )
-  }
+  };
 
-  render () {
-    return (
-      <SearchComponent>
-        <InputField>
-          <Icon icon={faMapMarkerAlt}/>
-          <SearchInput value={this.state.search} onChange={this.listCities}
-                       onClick={this.clearInput}
-                       placeholder="Ex. São Paulo" className="cities-input"
-                       aria-label="Buscar restaurantes por Cidade"
-          />
-          {this.getResults()}
-        </InputField>
-        <ButtonSecondary
-          to={{ pathname: `/search/${this.state.selected}` }}>Search</ButtonSecondary>
-      </SearchComponent>
-    )
-  }
+  return (
+    <SearchComponent>
+      <InputField>
+        <Icon icon={faMapMarkerAlt}/>
+        <SearchInput value={search} onChange={listCities}
+                      onClick={clearInput}
+                      placeholder="Ex. São Paulo" className="cities-input"
+                      aria-label="Buscar restaurantes por Cidade"
+        />
+        {getResults()}
+      </InputField>
+      <ButtonSecondary
+        to={{ pathname: `/search/${selected}` }}>Search</ButtonSecondary>
+    </SearchComponent>
+  );
 }

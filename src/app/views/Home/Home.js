@@ -58,9 +58,7 @@ const PackageList = styled.ul`
 const BurgerImage = styled.img`
   border-radius: 50%
 `
-export default class Home extends React.Component {
-
-  render () {
+export default function Home() {
     return (
       <div>
         <SectionPromotional>
@@ -107,5 +105,4 @@ export default class Home extends React.Component {
         </SectionPackages>
       </div>
     )
-  }
 }

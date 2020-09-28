@@ -5,7 +5,7 @@ import Home from './views/Home/Home'
 import HeaderComponent from './shared/layout/Header'
 import FooterComponent from './shared/layout/Footer'
 
-function App() {
+export default function App() {
   return (
     <div className="App">
       <Router>
@@ -26,5 +26,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
