@@ -73,6 +73,7 @@ export default function Search(props) {
   });
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     getRestaurants(city).then(res => res.json())
       .then(
         (result) => {

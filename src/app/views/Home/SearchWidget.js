@@ -50,10 +50,9 @@ const SearchInput = styled(Input)`
   margin-bottom: 2rem
 `
 
-export default function SearchWidget() {
+export default function SearchWidget({city, setCity}) {
   const [search, setSearch] = useState('');
   const [items, setItems] = useState([]);
-  const [selected, setSelected] = useState(0);
   const [controller, setController] = useState(null);
 
   useEffect(() => {
@@ -61,8 +60,8 @@ export default function SearchWidget() {
   }, []);
 
   const selectItem = ({ name, id }) => {
-    setSelected(id);
     setSearch(name);
+    setCity(id);
   };
 
   const listCities = (event) => {
@@ -85,12 +84,12 @@ export default function SearchWidget() {
 
   const clearInput = () => {
     setSearch('');
-    setSelected(0);
+    setCity(0);
   };
 
   const getResults = () => {
     return (
-      selected ? null : <CitiesList
+      city ? null : <CitiesList
         className="cities">{items}</CitiesList>
     )
   };
@@ -107,7 +106,7 @@ export default function SearchWidget() {
         {getResults()}
       </InputField>
       <ButtonSecondary
-        to={{ pathname: `/search/${selected}` }}>Search</ButtonSecondary>
+        to={{ pathname: `/search/${city}` }}>Search</ButtonSecondary>
     </SearchComponent>
   );
 }

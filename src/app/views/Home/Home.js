@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { ButtonPrimary, Container } from '../../style/styles'
-import SearchWidgetComponent from './SearchWidget'
+import SearchWidgetComponent from './ConnectedSearchWidget'
 import CardComponent from '../../shared/Card'
 
 const Section = styled.section`
